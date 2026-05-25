@@ -51,23 +51,25 @@ export default function GerarContratoPage() {
 
   // Carregar dados do job se jobId existir
   useEffect(() => {
-    if (jobId) {
+    if (!jobId) return
+    async function loadJob() {
       const res = await fetch(`/api/jobs/${jobId}`)
       const found: JobFull | null = res.ok ? await res.json() : null
       if (found) {
         setJob(found)
         setForm({
-          nome:          found.clientName ?? '',
-          tipo:          tipoContrato(found),
-          data:          found.scheduledAt ? found.scheduledAt.slice(0, 10) : '',
-          hora:          found.scheduledAt ? found.scheduledAt.slice(11, 16) : '10:30',
+          nome:           found.clientName ?? '',
+          tipo:           tipoContrato(found),
+          data:           found.scheduledAt ? found.scheduledAt.slice(0, 10) : '',
+          hora:           found.scheduledAt ? found.scheduledAt.slice(11, 16) : '10:30',
           localCerimonia: found.location?.name ?? '',
-          localFesta:    '',
-          valor:         String(found.totalValue),
-          sinal:         '20',
+          localFesta:     '',
+          valor:          String(found.totalValue),
+          sinal:          '20',
         })
       }
     }
+    loadJob()
   }, [jobId])
 
   function set(key: keyof FormData, val: string) {
