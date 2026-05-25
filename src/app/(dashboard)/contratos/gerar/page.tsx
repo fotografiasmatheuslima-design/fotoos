@@ -49,7 +49,7 @@ export default function GerarContratoPage() {
     localCerimonia: '', localFesta: '', valor: '', sinal: '20',
   })
 
-  // Carregar dados do job se jobId existir
+  // Carregar dados do job se jobId existir — async dentro do useEffect
   useEffect(() => {
     if (!jobId) return
     async function loadJob() {
