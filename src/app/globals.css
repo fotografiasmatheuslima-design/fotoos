@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  --brand:       #7c3aed;
+  --brand-dark:  #4c1d95;
+  --brand-light: #ede9fe;
+  --teal:        #0d9488;
+  --teal-light:  #ccfbf1;
+  --sidebar-bg:  #0b0f1a;
+  --sidebar-w:   240px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background: #f9fafb;
+  color: #111827;
+}
+
+/* Scrollbar discreta */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }

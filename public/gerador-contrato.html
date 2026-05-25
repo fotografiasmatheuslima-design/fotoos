@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matheus Lima Fotografias — Gerador de Contrato</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --dark: #0f0e0c;
+    --dark2: #1a1916;
+    --dark3: #252320;
+    --cream: #f5f0e8;
+    --cream2: #ede6d6;
+    --muted: #8a8070;
+    --border: rgba(201,168,76,0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark);
+    color: var(--cream);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 56px 24px 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px; height: 56px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    margin-bottom: 16px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: -1px;
+  }
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+  }
+  header h1 span { color: var(--gold); font-style: italic; }
+  header p {
+    margin-top: 8px;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin-bottom: 40px;
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-title .num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  .section-title h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream2);
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── GRID ── */
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 540px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* ── FIELDS ── */
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    background: var(--dark2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    color: var(--cream);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 12px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.1);
+  }
+  .field select { cursor: pointer; }
+  .field select option { background: var(--dark2); }
+  .field textarea { resize: vertical; min-height: 72px; }
+
+  /* money field */
+  .money-wrap { position: relative; }
+  .money-wrap span {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 13px;
+    pointer-events: none;
+  }
+  .money-wrap input { padding-left: 32px; }
+
+  /* ── TIPO EVENT badges ── */
+  .tipo-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tipo-group input[type="radio"] { display: none; }
+  .tipo-group label {
+    text-transform: none;
+    letter-spacing: 0;
+    cursor: pointer;
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.2s;
+    background: var(--dark2);
+  }
+  .tipo-group input[type="radio"]:checked + label {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+  .tipo-group label:hover { border-color: rgba(201,168,76,0.4); color: var(--cream2); }
+
+  /* tipo outro */
+  #outro-wrap {
+    display: none;
+    margin-top: 10px;
+  }
+  #outro-wrap.visible { display: block; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8px 0 24px;
+  }
+
+  /* ── BUTTON ── */
+  .btn-generate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    color: var(--dark);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 12px;
+  }
+  .btn-generate:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-generate:active { transform: translateY(0); }
+  .btn-generate svg { flex-shrink: 0; }
+
+  /* ── TOAST ── */
+  #toast {
+    display: none;
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--dark3);
+    border: 1px solid var(--gold);
+    color: var(--cream);
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    z-index: 9999;
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  #toast.show { display: block; animation: slideUp 0.3s ease; }
+  @keyframes slideUp {
+    from { opacity:0; transform: translate(-50%, 12px); }
+    to   { opacity:1; transform: translate(-50%, 0); }
+  }
+
+  /* ── helpers ── */
+  .helper {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">M</div>
+  <h1>Matheus Lima <span>Fotografias</span></h1>
+  <p>Gerador de Contrato de Prestação de Serviços</p>
+</header>
+
+<main>
+
+  <!-- CONTRATANTE -->
+  <div class="section">
+    <div class="section-title">
+      <span class="num">01</span>
+      <h2>Dados do Contratante</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid grid-2" style="margin-bottom:16px">
+      <div class="field">
+        <label>Nome Completo *</label>
+        <input type="text" id="nome" placeholder="Ex.: Maria da Silva Santos">
+      </div>
+      <div class="field">
+        <label>Nacionalidade</label>
+        <input type="text" id="nacionalidade" value="brasileira" placeholder="brasileira">
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-bottom:16px">
+      <div class="field">
+        <label>CPF *</label>
+        <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+      </div>
+      <div class="field" style="grid-column: span 2">
+        <label>Rua e número *</label>
+        <input type="text" id="rua" placeholder="Ex.: Rua das Flores, nº 123">
+      </div>
+    </div>
+    <div class="grid grid-3">
+      <div class="field">
+        <label>Bairro *</label>
+        <input type="text" id="bairro" placeholder="Ex.: Jd. das Nações">
+      </div>
+      <div class="field">
+        <label>Cidade *</label>
+        <input type="text" id="cidade" value="Paranavaí" placeholder="Paranavaí">
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <input type="text" id="estado" value="Paraná" placeholder="Paraná">
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPO DE EVENTO -->
+  <div class="section">
+    <div class="section-title">
+      <span class="num">02</span>
+      <h2>Tipo de Evento</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="tipo-group">
+      <input type="radio" name="tipo" id="t-casamento" value="Casamento">
+      <label for="t-casamento">💍 Casamento</label>
+
+      <input type="radio" name="tipo" id="t-15anos" value="Festa de 15 anos">
+      <label for="t-15anos">🌸 15 Anos</label>
+
+      <input type="radio" name="tipo" id="t-aniversario" value="Aniversário">
+      <label for="t-aniversario">🎂 Aniversário</label>
+
+      <input type="radio" name="tipo" id="t-formatura" value="Formatura">
+      <label for="t-formatura">🎓 Formatura</label>
+
+      <input type="radio" name="tipo" id="t-corporativo" value="Evento Corporativo">
+      <label for="t-corporativo">💼 Corporativo</label>
+
+      <input type="radio" name="tipo" id="t-ensaio" value="Ensaio Fotográfico">
+      <label for="t-ensaio">📷 Ensaio</label>
+
+      <input type="radio" name="tipo" id="t-outro" value="outro">
+      <label for="t-outro">✏️ Outro</label>
+    </div>
+    <div id="outro-wrap" class="field">
+      <label>Especifique o tipo de evento</label>
+      <input type="text" id="tipo-outro" placeholder="Ex.: Batizado, Bodas de prata...">
+    </div>
+  </div>
+
+  <!-- DATA E HORÁRIOS -->
+  <div class="section">
+    <div class="section-title">
+      <span class="num">03</span>
+      <h2>Data e Horários</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid grid-3">
+      <div class="field">
+        <label>Data do Evento *</label>
+        <input type="date" id="data-evento">
+      </div>
+      <div class="field">
+        <label>Horário de chegada *</label>
+        <input type="time" id="hora-chegada" value="10:30">
+      </div>
+      <div class="field">
+        <label>Horário previsto de término</label>
+        <input type="time" id="hora-termino">
+        <span class="helper">Deixe em branco se indeterminado</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCAIS -->
+  <div class="section">
+    <div class="section-title">
+      <span class="num">04</span>
+      <h2>Locais do Evento</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px">
+      <label>Local do Making Off / Produção</label>
+      <input type="text" id="local-making" placeholder="Ex.: Rua X, nº 00 — Paranavaí-PR (ou deixe em branco se não houver)">
+    </div>
+    <div class="field" style="margin-bottom:16px">
+      <label>Local da Cerimônia</label>
+      <input type="text" id="local-cerimonia" placeholder='Ex.: Igreja Matriz Nossa Senhora — Paranavaí-PR'>
+    </div>
+    <div class="field">
+      <label>Local da Festa / Recepção *</label>
+      <input type="text" id="local-festa" placeholder='Ex.: Restaurante "Na Roça" — Paranavaí-PR'>
+    </div>
+  </div>
+
+  <!-- VALOR -->
+  <div class="section">
+    <div class="section-title">
+      <span class="num">05</span>
+      <h2>Valor e Pagamento</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="grid grid-2">
+      <div class="field">
+        <label>Valor Total do Contrato *</label>
+        <div class="money-wrap">
+          <span>R$</span>
+          <input type="number" id="valor" placeholder="1799.00" step="0.01" min="0">
+        </div>
+      </div>
+      <div class="field">
+        <label>Sinal no fechamento (%)</label>
+        <input type="number" id="sinal-pct" value="20" min="0" max="100" placeholder="20">
+        <span class="helper">Padrão: 20% no fechamento, restante na semana do evento</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA DO CONTRATO -->
+  <div class="section">
+    <div class="section-title">
+      <span class="num">06</span>
+      <h2>Data de Assinatura</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="field" style="max-width:220px">
+      <label>Data do Contrato *</label>
+      <input type="date" id="data-contrato">
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <button class="btn-generate" onclick="gerarContrato()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="12" y1="18" x2="12" y2="12"/>
+      <line x1="9" y1="15" x2="15" y2="15"/>
+    </svg>
+    Gerar Contrato em PDF
+  </button>
+
+</main>
+
+<div id="toast">✓ Contrato gerado com sucesso!</div>
+
+<script>
+// ── CPF MASK ──
+document.getElementById('cpf').addEventListener('input', function(e) {
+  let v = e.target.value.replace(/\D/g, '');
+  if (v.length > 11) v = v.slice(0,11);
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d)/, '$1.$2');
+  v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  e.target.value = v;
+});
+
+// ── TIPO OUTRO ──
+document.querySelectorAll('input[name="tipo"]').forEach(r => {
+  r.addEventListener('change', () => {
+    const wrap = document.getElementById('outro-wrap');
+    if (r.value === 'outro') wrap.classList.add('visible');
+    else wrap.classList.remove('visible');
+  });
+});
+
+// ── DATA DEFAULT HOJE ──
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('data-contrato').value = hoje;
+
+// ── HELPERS ──
+function formatarData(str) {
+  if (!str) return '___________';
+  const [a,m,d] = str.split('-');
+  const meses = ['janeiro','fevereiro','março','abril','maio','junho',
+                 'julho','agosto','setembro','outubro','novembro','dezembro'];
+  return `${parseInt(d)} de ${meses[parseInt(m)-1]} de ${a}`;
+}
+function formatarValor(n) {
+  return parseFloat(n).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function valorPorExtenso(n) {
+  // Basic extenso for common values
+  const v = Math.round(parseFloat(n));
+  if (isNaN(v)) return '???';
+  const unidades = ['','um','dois','três','quatro','cinco','seis','sete','oito','nove',
+    'dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
+  const dezenas = ['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+  const centenas = ['','cem','duzentos','trezentos','quatrocentos','quinhentos',
+    'seiscentos','setecentos','oitocentos','novecentos'];
+
+  if (v === 0) return 'zero reais';
+
+  function centena(n) {
+    if (n <= 0) return '';
+    if (n < 20) return unidades[n];
+    if (n === 100) return 'cem';
+    const c = Math.floor(n/100);
+    const resto = n % 100;
+    if (resto === 0) return centenas[c];
+    if (resto < 20) return centenas[c] + ' e ' + unidades[resto];
+    const d = Math.floor(resto/10);
+    const u = resto % 10;
+    return centenas[c] + ' e ' + dezenas[d] + (u ? ' e ' + unidades[u] : '');
+  }
+
+  if (v < 1000) {
+    return centena(v) + ' reais';
+  }
+  const mil = Math.floor(v/1000);
+  const resto = v % 1000;
+  const milStr = mil === 1 ? 'mil' : centena(mil) + ' mil';
+  if (resto === 0) return milStr + ' reais';
+  return milStr + ' e ' + centena(resto) + ' reais';
+}
+
+function porcentagemTexto(pct) {
+  const p = parseInt(pct);
+  const map = {10:'dez',20:'vinte',25:'vinte e cinco',30:'trinta',40:'quarenta',50:'cinquenta',
+               60:'sessenta',70:'setenta',75:'setenta e cinco',80:'oitenta',90:'noventa',100:'cem'};
+  return map[p] || p.toString();
+}
+
+// ── GERAR PDF ──
+function gerarContrato() {
+  // Coleta
+  const nome        = document.getElementById('nome').value.trim();
+  const nacionalidade = document.getElementById('nacionalidade').value.trim() || 'brasileira';
+  const cpf         = document.getElementById('cpf').value.trim();
+  const rua         = document.getElementById('rua').value.trim();
+  const bairro      = document.getElementById('bairro').value.trim();
+  const cidade      = document.getElementById('cidade').value.trim() || 'Paranavaí';
+  const estado      = document.getElementById('estado').value.trim() || 'Paraná';
+  const dataEvento  = document.getElementById('data-evento').value;
+  const horaCheg    = document.getElementById('hora-chegada').value || '10:30';
+  const horaTerm    = document.getElementById('hora-termino').value;
+  const localMaking = document.getElementById('local-making').value.trim();
+  const localCerim  = document.getElementById('local-cerimonia').value.trim();
+  const localFesta  = document.getElementById('local-festa').value.trim();
+  const valorRaw    = document.getElementById('valor').value;
+  const sinalPct    = document.getElementById('sinal-pct').value || '20';
+  const dataContrato= document.getElementById('data-contrato').value;
+
+  const tipoChecked = document.querySelector('input[name="tipo"]:checked');
+  let tipoEvento = '';
+  if (tipoChecked) {
+    tipoEvento = tipoChecked.value === 'outro'
+      ? document.getElementById('tipo-outro').value.trim()
+      : tipoChecked.value;
+  }
+
+  // Validação mínima
+  if (!nome || !cpf || !rua || !dataEvento || !localFesta || !valorRaw || !dataContrato) {
+    alert('Por favor, preencha os campos obrigatórios marcados com *.');
+    return;
+  }
+
+  const valor = parseFloat(valorRaw);
+  const sinalPctNum = parseInt(sinalPct);
+  const restoPct = 100 - sinalPctNum;
+
+  const enderecoCompleto = `${rua}, ${bairro}, na cidade de ${cidade} no Estado do ${estado}`;
+  const dataEventoFmt = formatarData(dataEvento);
+  const dataContratoFmt = formatarData(dataContrato);
+  const valorFmt = formatarValor(valor);
+  const valorExt = valorPorExtenso(valor);
+
+  // Horário texto
+  let horarioTexto = `das ${horaCheg}`;
+  if (horaTerm) horarioTexto += ` até as ${horaTerm}`;
+  else horarioTexto += ' até o término do evento ou quando o CONTRATADO achar necessário';
+
+  // Locais texto para cláusula 1.1
+  let locaisTexto = '';
+  const locais = [];
+  if (localMaking) locais.push(`making off em ${localMaking}`);
+  if (localCerim) locais.push(`cerimônia em ${localCerim}`);
+  if (localFesta) locais.push(`festa/recepção em ${localFesta}`);
+  locaisTexto = locais.join('; ');
+
+  // ── jsPDF ──
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const W = 210, H = 297;
+  const ML = 25, MR = 25, MT = 20;
+  const TW = W - ML - MR; // text width = 160
+  let y = MT;
+
+  const SIZE = { title: 13, heading: 10.5, body: 9.5, small: 8.5 };
+
+  function setFont(style, size) {
+    if (style === 'bold') doc.setFont('helvetica','bold');
+    else if (style === 'italic') doc.setFont('helvetica','italic');
+    else if (style === 'bolditalic') doc.setFont('helvetica','bolditalic');
+    else doc.setFont('helvetica','normal');
+    doc.setFontSize(size || SIZE.body);
+  }
+
+  function checkPage(needed) {
+    if (y + needed > H - 20) {
+      doc.addPage();
+      y = MT;
+    }
+  }
+
+  function addParagraph(text, opts={}) {
+    const { size=SIZE.body, style='normal', indent=0, spaceBefore=0, spaceAfter=4, align='justify' } = opts;
+    checkPage(12);
+    setFont(style, size);
+    const lines = doc.splitTextToSize(text, TW - indent);
+    const lineH = size * 0.4;
+    const totalH = lines.length * lineH;
+    checkPage(totalH + spaceBefore + spaceAfter);
+    y += spaceBefore;
+    if (align === 'center') {
+      lines.forEach(l => { doc.text(l, W/2, y, {align:'center'}); y += lineH; });
+    } else if (align === 'right') {
+      lines.forEach(l => { doc.text(l, W - MR, y, {align:'right'}); y += lineH; });
+    } else {
+      // justified: jsPDF doesn't native justify, so we just left-align with indent
+      lines.forEach(l => { doc.text(l, ML + indent, y); y += lineH; });
+    }
+    y += spaceAfter;
+  }
+
+  function addMixed(parts, opts={}) {
+    // parts: [{text, bold}, ...]
+    const { size=SIZE.body, spaceBefore=0, spaceAfter=4, indent=0 } = opts;
+    checkPage(12);
+    y += spaceBefore;
+    const lineH = size * 0.4;
+    // Combine into a single string with newlines for splitting
+    const fullText = parts.map(p=>p.text).join('');
+    const lines = doc.splitTextToSize(fullText, TW - indent);
+    // For simplicity: render full text normally, then re-render bold parts
+    // (jsPDF doesn't support inline bold natively, so we fake it)
+    // Strategy: render normal text then bold text on same line via cursor tracking
+    // For contract use, we'll just render the whole thing in normal and separately re-bold
+    lines.forEach(line => {
+      let cx = ML + indent;
+      // Find bold parts in this line
+      let remaining = line;
+      parts.forEach(part => {
+        // find part.text in remaining
+        const idx = remaining.indexOf(part.text);
+        if (idx === -1) return;
+        // text before
+        const before = remaining.slice(0, idx);
+        if (before) {
+          setFont('normal', size);
+          doc.text(before, cx, y);
+          cx += doc.getTextWidth(before);
+        }
+        // the part itself
+        setFont(part.bold ? 'bold' : 'normal', size);
+        doc.text(part.text, cx, y);
+        cx += doc.getTextWidth(part.text);
+        remaining = remaining.slice(idx + part.text.length);
+      });
+      if (remaining) {
+        setFont('normal', size);
+        doc.text(remaining, cx, y);
+      }
+      y += lineH;
+    });
+    y += spaceAfter;
+  }
+
+  function sectionHeading(text) {
+    checkPage(16);
+    y += 4;
+    setFont('bold', SIZE.heading);
+    doc.text(text, ML, y);
+    y += 6;
+  }
+
+  function clause(num, text) {
+    checkPage(14);
+    const lineH = SIZE.body * 0.4;
+    setFont('normal', SIZE.body);
+    const indentStr = '        '; // tab indent
+    const full = `${indentStr}${num} ${text}`;
+    const lines = doc.splitTextToSize(full, TW);
+    lines.forEach(l => { doc.text(l, ML, y); y += lineH; });
+    y += 4;
+  }
+
+  // ══════════════════════════════════════
+  // CONTEÚDO DO CONTRATO
+  // ══════════════════════════════════════
+
+  // Título
+  setFont('bold', SIZE.title);
+  doc.text('CONTRATO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS', W/2, y, {align:'center'});
+  y += 10;
+
+  addParagraph(
+    'Através do presente firmam as partes compromisso de prestação de serviços remunerada, mediante as seguintes cláusulas e condições:',
+    {spaceBefore:2, spaceAfter:6}
+  );
+
+  // Contratante
+  const contratanteText = `CONTRATANTE: ${nome.toUpperCase()}, ${nacionalidade}, inscrita no CPF sob o n° ${cpf}, com domicílio e residência na ${enderecoCompleto}, denominada CONTRATANTE.`;
+  addParagraph(contratanteText, {style:'normal', indent:16, spaceAfter:5});
+
+  // Contratado
+  addParagraph(
+    'CONTRATADO: MATHEUS LIMA FOTOGRAFIAS, pessoa jurídica de direito privado com sede à Rua Conrado Fanceli n° 545, Jd. Progresso, na Cidade de Paranavaí, no Estado do Paraná, CNPJ: 60.085.955/0001-10, doravante denominado CONTRATADO,',
+    {indent:16, spaceAfter:8}
+  );
+
+  // Cláusula 1
+  sectionHeading('CLÁUSULA PRIMEIRA - OBJETO');
+  let objeto = `1.1 Os serviços a serem prestados pelo CONTRATADO consistem na realização de reportagem fotográfica`;
+  if (tipoEvento) objeto += ` de ${tipoEvento}`;
+  objeto += ` que se realizará na data de ${dataEventoFmt}`;
+  if (locaisTexto) objeto += `, com ${locaisTexto}`;
+  objeto += `, na cidade de ${cidade}-PR.`;
+  clause('', objeto.replace(/^        /, ''));
+
+  // Cláusula 2
+  sectionHeading('CLÁUSULA SEGUNDA - OBRIGAÇÕES DO CONTRATANTE');
+  clause('2.1', 'A CONTRATANTE deverá fornecer ao CONTRATADO todas as informações necessárias à realização do serviço, devendo especificar os detalhes necessários à perfeita execução do trabalho.');
+  clause('2.2', 'A CONTRATANTE deverá efetuar o pagamento na forma e condições estabelecidas na cláusula quinta.');
+  clause('2.3', 'A CONTRATANTE deverá dar créditos ao CONTRATADO nas fotos, de acordo com a Lei de Direitos Autorais, n° 9610 de 19 de Fevereiro de 1988.');
+  clause('2.4', 'É de responsabilidade da CONTRATANTE, eventuais danos físicos causados aos equipamentos ou membros da equipe por parte de seus convidados e por equipe de apoio do evento (ex: segurança, cerimonial, garçom, etc.) devendo ressarcir o prejuízo causado ao CONTRATADO.');
+  clause('2.5', 'É de responsabilidade da CONTRATANTE fornecer local adequado para a equipe fotográfica guardar o equipamento, bem como a alimentação durante a realização do evento.');
+
+  // Cláusula 3
+  sectionHeading('CLÁUSULA TERCEIRA - OBRIGAÇÕES DO CONTRATADO');
+  clause('3.1', 'O CONTRATADO deverá prestar os serviços solicitados pela CONTRATANTE conforme descrito, especificações e prazos acordados entre as partes, bem como;');
+  clause('3.1.1', 'O prazo para a entrega de todos as fotos editadas fica estipulado para até noventa dias, após o evento;');
+  clause('3.1.2', 'Será entregue uma prévia de 15 fotos editadas no prazo de quinze dias após o evento.');
+  clause('3.1.4', 'Realizar a entrega de todas as fotos do evento editadas. De forma digital, POR MEIO DO LINK DO GOOGLE DRIVE, mantendo-as durante o período de um ano após a data de entrega.');
+
+  // Cláusula 4
+  sectionHeading('CLÁUSULA QUARTA - DOS SERVIÇOS');
+  clause('4.1', 'O CONTRATADO atuará nos serviços contratados de acordo com as especificações fornecidas, que passam a ser parte integrante do presente contrato.');
+  clause('4.2', `O CONTRATADO deverá estar no local e na hora acordada e permanecerá ${horarioTexto}, à disposição da CONTRATANTE.`);
+  clause('4.4', 'O serviço será cancelado quando ocorrer: chuva (cenas externas), falta de energia elétrica, falta de segurança do CONTRATADO, ou doenças de ambas as partes.');
+  clause('4.5', 'O CONTRATANTE desde já autoriza a utilização da sua imagem pelo CONTRATADO em seu perfil do Instagram e site, exclusivamente para fins de divulgação de seu trabalho.');
+
+  // Cláusula 5
+  sectionHeading('CLÁUSULA QUINTA - DOS PREÇOS');
+  clause('5.1', `O valor previamente estabelecido deste serviço é de R$ ${valorFmt} (${valorExt}).`);
+  clause('5.2', `Será pago o valor de ${sinalPctNum}% (${porcentagemTexto(sinalPctNum)} por cento) no fechamento do contrato para garantia da data, e os ${restoPct}% (${porcentagemTexto(restoPct)} por cento) restantes até a semana do evento.`);
+
+  // Cláusula 6
+  sectionHeading('CLÁUSULA SEXTA - DOS DIREITOS AUTORAIS');
+  clause('6.1', 'O CONTRATADO declara ser titular originário e exclusivo dos trabalhos entregues.');
+
+  // Cláusula 7
+  sectionHeading('CLÁUSULA SÉTIMA - DO DESCUMPRIMENTO');
+  clause('7.1', 'O descumprimento de qualquer uma das cláusulas por qualquer parte, implicará na rescisão imediata deste contrato, não isentando o CONTRATADO de suas responsabilidades referentes ao zelo com informações e dados da CONTRATANTE.');
+  clause('7.2', 'Havendo descumprimento deste contrato, será devida multa de 20% sobre o valor do contrato.');
+
+  // Cláusula 8
+  sectionHeading('CLÁUSULA OITAVA - DA RESCISÃO IMOTIVADA');
+  clause('8.1', 'Poderá o presente instrumento ser rescindido por qualquer uma das partes, em qualquer momento, sem que haja qualquer tipo de motivo relevante, não obstante a outra parte deverá ser avisada previamente por escrito, no prazo de 30 dias antecedentes ao evento, sendo estornado apenas 50% do valor pago.');
+  clause('8.2', 'Caso o contrato seja rescindido imotivadamente no período posterior aos 30 dias, será devolvido apenas 25% do valor pago.');
+  clause('8.3', 'Ainda, caso o contrato seja rescindido imotivadamente na semana do evento, será devolvido apenas 10% do valor pago.');
+
+  // Cláusula 9
+  sectionHeading('CLÁUSULA NONA - DO PRAZO E VALIDADE');
+  clause('9.1', 'Este instrumento é válido por prazo indeterminado, vigendo até a finalização do serviço, ora contratado, ou encerramento do contrato por acordo entre as partes, não ficando as partes isentas de seus compromissos éticos após o término do mesmo.');
+
+  // Cláusula 10
+  sectionHeading('CLÁUSULA DÉCIMA - DO SIGILO E CONFIDENCIALIDADE');
+  clause('10.1', 'As partes declaram expressamente manter sigilo, tanto verbal, ou, por qualquer outra forma, de todos os dados, informações pessoais e profissionais relacionados ao presente contrato, não podendo revelar, reproduzir, utilizar ou dar conhecimento, em hipótese alguma, a terceiros, de dados ou informações obtidas por força deste contrato, sem a prévia autorização da outra parte.');
+
+  // Cláusula 11
+  sectionHeading('CLÁUSULA DÉCIMA PRIMEIRA - DAS DISPOSIÇÕES GERAIS');
+  clause('11.1', 'Fica pactuada a total inexistência de vínculo trabalhista entre as partes, não havendo entre o CONTRATADO e a CONTRATANTE qualquer tipo de relação de subordinação.');
+  clause('11.2', 'A tolerância, por qualquer das partes, com relação ao descumprimento de qualquer termo ou condição aqui ajustado, não será considerada como desistência em exigir o cumprimento de disposição nele contida, nem representará novação com relação à obrigação passada, presente ou futura, no tocante ao termo ou condição cujo descumprimento foi tolerado.');
+
+  // Cláusula 12
+  sectionHeading('CLÁUSULA DÉCIMA SEGUNDA - DO FORO');
+  clause('12.1', 'Para dirimir quaisquer controvérsias oriundas do presente contrato, as partes elegem o foro da Comarca de Paranavaí do Estado do Paraná.');
+
+  // Assinaturas
+  checkPage(50);
+  y += 4;
+  addParagraph('Por estarem assim justos e de acordo, firmam o presente instrumento, em duas vias de igual teor, juntamente com 2 (duas) testemunhas.', {spaceAfter:6});
+  addParagraph(`PARANAVAÍ-PR, ${dataContratoFmt}`, {align:'right', spaceAfter:14});
+
+  // Linhas de assinatura
+  const col1 = ML + 5, col2 = W/2 + 10;
+  const lW = 65;
+
+  setFont('normal', SIZE.small);
+  // Linha 1
+  doc.line(col1, y, col1 + lW, y);
+  doc.line(col2, y, col2 + lW, y);
+  y += 4;
+  setFont('bold', SIZE.small);
+  doc.text('MATHEUS VICTOR DE LIMA MACHADO', col1, y);
+  doc.text(nome.toUpperCase(), col2, y);
+  y += 4;
+  setFont('italic', SIZE.small);
+  doc.text('Contratado', col1 + lW/2, y, {align:'center'});
+  doc.text('Contratante', col2 + lW/2, y, {align:'center'});
+  y += 16;
+
+  // Testemunhas
+  doc.line(col1, y, col1 + lW, y);
+  doc.line(col2, y, col2 + lW, y);
+  y += 4;
+  setFont('normal', SIZE.small);
+  doc.text('(Nome, CPF e assinatura T1)', col1, y);
+  doc.text('(Nome, CPF e assinatura T2)', col2, y);
+
+  // ── Download ──
+  const nomeArq = nome.split(' ')[0] || 'Contratante';
+  doc.save(`Contrato_${nomeArq}_${dataEvento || 'semdata'}.pdf`);
+
+  // Toast
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
