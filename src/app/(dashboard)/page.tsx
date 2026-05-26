@@ -129,6 +129,14 @@ export default async function DashboardPage() {
   return (
     <>
       <Header title="Dashboard" />
+      <style>{`
+        @media (max-width: 767px) {
+          .acoes-grid   { grid-template-columns: repeat(2, 1fr) !important; }
+          .agenda-grid  { grid-template-columns: 1fr !important; }
+          .kpi-grid     { grid-template-columns: repeat(2, 1fr) !important; }
+          .pipeline-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <div className="flex-1 overflow-y-auto" style={{ padding: 14, background: '#f9fafb' }}>
 
         <EventDayCheckin jobs={jobs} />
@@ -147,7 +155,7 @@ export default async function DashboardPage() {
                     {group.group}
                   </span>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 7 }}>
+                <div className="acoes-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 7 }}>
                   {group.items.map(item => (
                     <a key={item.label} href={item.href} style={{
                       display: 'flex', alignItems: 'center', gap: 9,
@@ -169,7 +177,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── 2. AGENDA + ALERTAS ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 290px', gap: 10, marginBottom: 11 }}>
+        <div className="agenda-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 290px', gap: 10, marginBottom: 11 }}>
           <div style={{ background: '#fff', border: '0.5px solid #e5e7eb', borderRadius: 10, padding: '13px 15px' }}>
             <AgendaCalendar jobs={jobs} />
           </div>
@@ -201,7 +209,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── 3. KPIs OPERACIONAIS ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 9, marginBottom: 11 }}>
+        <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 9, marginBottom: 11 }}>
           {[
             { label: 'Jobs ativos',   value: String(activeJobs.length),                       sub: `${activeJobs.filter(j=>j.type==='evento').length} eventos · ${activeJobs.filter(j=>j.type==='ensaio').length} ensaios`, color: '#7c3aed' },
             { label: 'A receber',     value: `R$${totalPending.toLocaleString('pt-BR')}`,     sub: overdueAmt > 0 ? `R$${overdueAmt.toLocaleString('pt-BR')} em atraso` : 'Em dia',     color: overdueAmt > 0 ? '#ef4444' : '#059669' },
@@ -222,7 +230,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* ── 5. PIPELINE + JOBS POR MES ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        <div className="pipeline-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
 
           {/* Pipeline */}
           <div style={{ background: '#fff', border: '0.5px solid #e5e7eb', borderRadius: 10, padding: '13px 15px' }}>
