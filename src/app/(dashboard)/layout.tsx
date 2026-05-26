@@ -12,9 +12,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden" style={{ overflowX: 'hidden', maxWidth: '100vw' }}>
         {/* Padding inferior no mobile para não sobrepor a bottom bar */}
-        <div className="flex-1 flex flex-col overflow-hidden pb-[60px] md:pb-0">
+        <div className="flex-1 flex flex-col overflow-hidden pb-[60px] md:pb-0" style={{ overflowX: 'hidden' }}>
           {children}
         </div>
       </main>

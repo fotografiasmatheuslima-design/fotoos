@@ -131,13 +131,14 @@ export default async function DashboardPage() {
       <Header title="Dashboard" />
       <style>{`
         @media (max-width: 767px) {
-          .acoes-grid   { grid-template-columns: repeat(2, 1fr) !important; }
-          .agenda-grid  { grid-template-columns: 1fr !important; }
-          .kpi-grid     { grid-template-columns: repeat(2, 1fr) !important; }
+          .acoes-grid    { grid-template-columns: repeat(2, 1fr) !important; }
+          .agenda-grid   { grid-template-columns: 1fr !important; }
+          .kpi-grid      { grid-template-columns: repeat(2, 1fr) !important; }
           .pipeline-grid { grid-template-columns: 1fr !important; }
+          .charts-grid   { grid-template-columns: 1fr !important; }
         }
       `}</style>
-      <div className="flex-1 overflow-y-auto" style={{ padding: 14, background: '#f9fafb' }}>
+      <div className="flex-1 overflow-y-auto" style={{ padding: 14, background: '#f9fafb', overflowX: 'hidden' }}>
 
         <EventDayCheckin jobs={jobs} />
 
