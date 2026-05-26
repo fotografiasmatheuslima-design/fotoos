@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export function Header({ title, chip }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between flex-shrink-0" style={{ padding: '9px 18px', borderBottom: '0.5px solid #e5e7eb', background: '#fff' }}>
+    <header className="flex items-center justify-between flex-shrink-0 pl-14 md:pl-[18px]" style={{ paddingTop: 9, paddingBottom: 9, paddingRight: 18, borderBottom: '0.5px solid #e5e7eb', background: '#fff' }}>
       <div className="flex items-center gap-2">
         <span style={{ fontWeight: 500, fontSize: 13, color: '#111827' }}>{title}</span>
         {chip && (
